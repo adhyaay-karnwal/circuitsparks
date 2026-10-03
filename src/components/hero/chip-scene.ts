@@ -1,29 +1,44 @@
 import {
-  ACESFilmicToneMapping,
+  BackSide,
   CanvasTexture,
   Color,
   DirectionalLight,
   ExtrudeGeometry,
+  Fog,
   Group,
   InstancedMesh,
+  type Material,
   Matrix4,
   Mesh,
+  MeshBasicMaterial,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
+  NeutralToneMapping,
   PerspectiveCamera,
   PlaneGeometry,
   PMREMGenerator,
-  PointLight,
   Quaternion,
   Scene,
+  ShaderMaterial,
   Shape,
+  SphereGeometry,
   SRGBColorSpace,
   Vector3,
   WebGLRenderer,
 } from "three";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { LOGO_PATH, LOGO_VIEWBOX } from "@/components/site/logo-path";
+
+/**
+ * Colors sampled from the hero background (gradient-depth.jpg as rendered),
+ * so the chip reflects and sits in the same light as the page around it.
+ */
+const WORLD = {
+  sky: "#9fc2c7", // overhead source, brighter than the visible top edge
+  top: "#385d63",
+  horizon: "#1b3f46", // directly behind the chip
+  floor: "#071f24",
+};
 
 /** Package dimensions in scene units (a square QFP-style chip). */
 const BODY = { size: 2.4, height: 0.34, radius: 0.07 };
@@ -37,7 +52,8 @@ export type ChipScene = { dispose: () => void };
 /**
  * Renders an interactive 3D microchip into `canvas`.
  * Glossy clearcoat epoxy body, metallic gull-wing pins, the CircuitSparks
- * mark laser-etched on top, lit by a studio environment.
+ * mark etched on top. Lit by an environment built from the hero's own
+ * colors, with matching film grain, so it reads as part of the background.
  */
 export function createChipScene(
   canvas: HTMLCanvasElement,
@@ -47,26 +63,27 @@ export function createChipScene(
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = SRGBColorSpace;
-  renderer.toneMapping = ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMapping = NeutralToneMapping;
+  renderer.toneMappingExposure = 1.15;
 
   const scene = new Scene();
   const pmrem = new PMREMGenerator(renderer);
-  const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  const studio = createStudio();
+  const envTexture = pmrem.fromScene(studio.scene, 0.03).texture;
+  studio.dispose();
   scene.environment = envTexture;
-  scene.environmentIntensity = 0.9;
+  scene.environmentIntensity = 1;
+  // Slight atmospheric haze toward the background color for depth.
+  scene.fog = new Fog(WORLD.horizon, 6.2, 16);
 
   const camera = new PerspectiveCamera(28, 1, 0.1, 100);
   camera.position.set(0, 0.5, 6.3);
   camera.lookAt(0, 0, 0);
 
-  // Lights: a soft key, and a cool rim in the brand sky color.
-  const key = new DirectionalLight(0xffffff, 2.2);
-  key.position.set(-3, 5, 4);
+  // One soft overhead key in the scene's light color; the environment does the rest.
+  const key = new DirectionalLight(new Color(WORLD.sky), 1.3);
+  key.position.set(-1, 6, 2);
   scene.add(key);
-  const rim = new PointLight(new Color("#b6dbe1"), 18, 20, 2);
-  rim.position.set(2.5, 1.5, -3);
-  scene.add(rim);
 
   const chip = new Group();
   chip.rotation.x = BASE_TILT;
@@ -75,12 +92,13 @@ export function createChipScene(
   // Body: glossy black epoxy with a clearcoat that catches the light.
   const bodyGeometry = new RoundedBoxGeometry(BODY.size, BODY.height, BODY.size, 5, BODY.radius);
   const bodyMaterial = new MeshPhysicalMaterial({
-    color: 0x050708,
-    roughness: 0.62,
+    color: 0x040607,
+    roughness: 0.6,
     metalness: 0,
     clearcoat: 1,
-    clearcoatRoughness: 0.08,
+    clearcoatRoughness: 0.12,
   });
+  addGrain(bodyMaterial);
   chip.add(new Mesh(bodyGeometry, bodyMaterial));
 
   // Top marking: etched logo, part number, and the pin-1 dot.
@@ -92,6 +110,7 @@ export function createChipScene(
     metalness: 0,
     depthWrite: false,
   });
+  addGrain(markingMaterial);
   const marking = new Mesh(new PlaneGeometry(BODY.size - 0.2, BODY.size - 0.2), markingMaterial);
   marking.rotation.x = -Math.PI / 2;
   marking.position.y = BODY.height / 2 + 0.001;
@@ -99,7 +118,8 @@ export function createChipScene(
 
   // Pins: one extruded gull-wing profile, instanced around all four sides.
   const pinGeometry = createPinGeometry();
-  const pinMaterial = new MeshStandardMaterial({ color: 0xd9dee2, metalness: 1, roughness: 0.22 });
+  const pinMaterial = new MeshStandardMaterial({ color: 0xdbe5e7, metalness: 1, roughness: 0.26 });
+  addGrain(pinMaterial);
   const pins = new InstancedMesh(pinGeometry, pinMaterial, PINS.perSide * 4);
   const matrix = new Matrix4();
   const rotation = new Quaternion();
@@ -250,6 +270,73 @@ export function createChipScene(
   };
 }
 
+/**
+ * Reflection environment: a dome graded from the hero's own colors, plus a
+ * large soft overhead source matching the light falling on the background.
+ */
+function createStudio() {
+  const scene = new Scene();
+  const dome = new Mesh(
+    new SphereGeometry(10, 48, 24),
+    new ShaderMaterial({
+      side: BackSide,
+      depthWrite: false,
+      uniforms: {
+        sky: { value: new Color(WORLD.sky) },
+        top: { value: new Color(WORLD.top) },
+        horizon: { value: new Color(WORLD.horizon) },
+        floor: { value: new Color(WORLD.floor) },
+      },
+      vertexShader: `varying vec3 vPos;
+        void main() { vPos = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+      fragmentShader: `uniform vec3 sky; uniform vec3 top; uniform vec3 horizon; uniform vec3 floor; varying vec3 vPos;
+        void main() {
+          float h = normalize(vPos).y;
+          vec3 c = h > 0.0
+            ? mix(mix(horizon, top, smoothstep(0.0, 0.45, h)), sky, smoothstep(0.45, 1.0, h))
+            : mix(horizon, floor, smoothstep(0.0, 0.5, -h));
+          gl_FragColor = vec4(c, 1.0);
+        }`,
+    }),
+  );
+  scene.add(dome);
+
+  // Overhead softbox: the bright band that slides across the glossy top.
+  const softbox = new Mesh(new PlaneGeometry(6, 3), new MeshBasicMaterial({ color: new Color(WORLD.sky).multiplyScalar(4) }));
+  softbox.position.set(-1.5, 7, 1.5);
+  softbox.lookAt(0, 0, 0);
+  scene.add(softbox);
+
+  return {
+    scene,
+    dispose() {
+      scene.traverse((o) => {
+        if (o instanceof Mesh) {
+          o.geometry.dispose();
+          (o.material as Material).dispose();
+        }
+      });
+    },
+  };
+}
+
+/**
+ * Static film grain in screen space, scaled to CSS pixels so it matches the
+ * grain baked into the background image.
+ */
+function addGrain(material: Material, amount = 0.05) {
+  const dpr = Math.min(window.devicePixelRatio, 2).toFixed(1);
+  material.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <dithering_fragment>",
+      `#include <dithering_fragment>
+      vec2 grainCell = floor(gl_FragCoord.xy / ${dpr});
+      float grain = fract(sin(dot(grainCell, vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
+      gl_FragColor.rgb += grain * ${amount.toFixed(3)};`,
+    );
+  };
+}
+
 /** Side profile of a gull-wing lead, extruded to pin width. Origin at the body edge. */
 function createPinGeometry() {
   const t = 0.036; // metal thickness
@@ -287,7 +374,7 @@ function createMarkingTexture() {
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d")!;
-  const ink = "rgba(206, 214, 217, 0.5)";
+  const ink = "rgba(186, 214, 219, 0.42)";
 
   // Pin-1 dot, recessed look.
   ctx.fillStyle = "rgba(255, 255, 255, 0.07)";
@@ -315,7 +402,7 @@ function createMarkingTexture() {
   ctx.fillText("CIRCUITSPARKS", size / 2, 690);
   ctx.font = `400 44px ${family}`;
   ctx.letterSpacing = "8px";
-  ctx.fillStyle = "rgba(206, 214, 217, 0.32)";
+  ctx.fillStyle = "rgba(186, 214, 219, 0.26)";
   ctx.fillText("CS-01  ·  2026", size / 2, 770);
 
   const texture = new CanvasTexture(canvas);
