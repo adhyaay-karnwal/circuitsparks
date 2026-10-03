@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Outro } from "@/components/site/Outro";
-import { LogoMark } from "@/components/site/Logo";
+import { HeroChip } from "@/components/hero/HeroChip";
 import { Accordion } from "@/components/ui/Accordion";
 import { ButtonLink, TextLink } from "@/components/ui/Button";
 import { Chapter } from "@/components/ui/Chapter";
@@ -27,8 +27,8 @@ export default function Home() {
           className="-z-10 object-cover"
           style={{ objectPosition: "50% 30%" }}
         />
-        <div className="flex flex-col items-center gap-4 px-8 pt-16 text-center">
-          <LogoMark className="enter mb-10 size-20 sm:size-24" />
+        <div className="flex flex-col items-center gap-4 px-8 pt-10 text-center">
+          <HeroChip className="enter -mb-2 h-[clamp(220px,34vh,340px)] w-[min(92vw,560px)]" />
           <h1 className="enter text-hero" style={stagger(1)}>
             CircuitSparks
           </h1>
