@@ -1,5 +1,5 @@
 {
-  "name": "bbf-website",
+  "name": "circuitsparks",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,21 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@hugeicons/core-free-icons": "^4.2.3",
-    "@hugeicons/react": "^1.1.9",
-    "cobe": "^2.0.1",
-    "hls.js": "^1.6.16",
-    "next": "16.2.12",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.12",
+    "eslint-config-next": "16.3.6",
+    "sharp": "^0.34.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

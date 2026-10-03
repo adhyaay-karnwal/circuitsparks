@@ -1,330 +1,58 @@
-import { PARTNER_COUNTRY_COUNT } from "@/lib/partners";
-
-export type CtaLink = {
-  label: string;
-  href: string;
-};
-
-export type NavLink = {
-  title: string;
-  description: string;
-  href: string;
-};
-
-export type NavItem =
-  | { label: string; href: string; kind: "link" }
-  | { label: string; kind: "menu"; items: NavLink[] };
-
 /**
- * Top-level nav mirrors natural.com density.
- * Mega-menus only when there are multiple real pages under a label.
+ * Organization-wide settings. Items marked TODO need confirmation from the
+ * founding team before launch.
  */
-export const NAV: NavItem[] = [
-  {
-    label: "Programs",
-    kind: "menu",
-    items: [
-      {
-        title: "Overview",
-        description: "How Budget Bridge reaches students worldwide",
-        href: "/programs",
-      },
-      {
-        title: "Education",
-        description: "Live tutoring, workshops, and curriculum",
-        href: "/programs/education",
-      },
-      {
-        title: "Seminars",
-        description: "Free sessions for elementary and middle schools",
-        href: "/programs/seminars",
-      },
-    ],
-  },
-  { label: "Advocacy", href: "/advocacy", kind: "link" },
-  { label: "Partners", href: "/partners", kind: "link" },
-  {
-    label: "About",
-    kind: "menu",
-    items: [
-      {
-        title: "Our story",
-        description: "How four students started Budget Bridge",
-        href: "/about",
-      },
-      {
-        title: "Press",
-        description: "News and letters from the community",
-        href: "/press",
-      },
-      {
-        title: "Blog",
-        description: "Ideas on money, policy, and education",
-        href: "/blog",
-      },
-    ],
-  },
-  { label: "Get Involved", href: "/get-involved", kind: "link" },
-  { label: "Contact", href: "/contact", kind: "link" },
+export const site = {
+  name: "CircuitSparks",
+  legalName: "CircuitSparks",
+  tagline: "Every engineer starts with a spark.",
+  description:
+    "CircuitSparks is a student-founded, youth-led 501(c)(3) bringing free, hands-on electronics workshops to middle schoolers, taught by high school mentors at local libraries and schools.",
+  url: "https://circuitsparks.org", // TODO: confirm production domain
+  email: "hello@circuitsparks.org", // TODO: confirm inbox
+  sponsorshipEmail: "sponsors@circuitsparks.org", // TODO: confirm inbox
+  gofundmeUrl: "https://www.gofundme.com/", // TODO: replace with campaign URL
+} as const;
+
+export type NavItem = { label: string; href: string };
+
+export const primaryNav: NavItem[] = [
+  { label: "Programs", href: "/programs" },
+  { label: "Mentors", href: "/mentors" },
+  { label: "About", href: "/about" },
+  { label: "Donate", href: "/donate" },
 ];
 
-export const FOOTER_COLUMNS = [
+export const footerNav: { title: string; items: NavItem[] }[] = [
   {
     title: "Programs",
-    links: [
-      { label: "Overview", href: "/programs" },
-      { label: "Education", href: "/programs/education" },
-      { label: "Seminars", href: "/programs/seminars" },
-    ],
-  },
-  {
-    title: "Advocacy",
-    links: [{ label: "Policy & Advocacy", href: "/advocacy" }],
-  },
-  {
-    title: "About",
-    links: [
-      { label: "Our story", href: "/about" },
-      { label: "Press", href: "/press" },
-      { label: "Blog", href: "/blog" },
-      { label: "Partners", href: "/partners" },
-      { label: "Get Involved", href: "/get-involved" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    title: "Connect",
-    links: [
-      {
-        label: "Instagram",
-        href: "https://www.instagram.com/budgetbridgefoundation/",
-        external: true,
-        variant: "instagram" as const,
-      },
-      {
-        label: "Email",
-        href: "mailto:budgetbridgefoundation@gmail.com",
-        external: true,
-      },
-    ],
-  },
-] as const;
-
-export const SITE = {
-  name: "Budget Bridge Foundation",
-  shortName: "BBF",
-  url: "https://www.budgetbridgefoundation.org",
-  email: "budgetbridgefoundation@gmail.com",
-  instagram: "https://www.instagram.com/budgetbridgefoundation/",
-  instagramHandle: "@budgetbridgefoundation",
-  ein: "39-3370086",
-  tagline: "Empowering futures through financial education.",
-  impact: {
-    students: "45,000",
-    partnerReach: "650,000",
-    grants: "$200k+",
-    countries: String(PARTNER_COUNTRY_COUNT),
-  },
-};
-
-/** Hero copy — Natural structure, BBF words */
-export const HERO = {
-  announcement: {
-    title: "The adolescent window in financial education",
-    date: "Jul 29",
-    href: "/blog/adolescent-window-financial-education",
-  },
-  headline: "Budget Bridge Foundation teaches money skills.",
-  muted:
-    "Seminars. Tutoring. Workshops. Advocacy. Curriculum. Everything students need to thrive *",
-  primaryCta: { label: "Volunteer with us", href: "/get-involved" } satisfies CtaLink,
-  secondaryCta: { label: "Talk to the team", href: "/contact" } satisfies CtaLink,
-};
-
-/**
- * Homepage copy — sourced from budgetbridgefoundation.org.
- * Do not invent facts; keep marketing framing light around verified text.
- */
-export const HOME = {
-  mission: {
-    label: "Mission",
-    heading: "Our Mission",
-    body: "We bridge the financial literacy gap by empowering students through local seminars, school presentations, workshops, competitions, and live tutoring. Our goal is to equip the next generation with essential money management skills to thrive in a global economy.",
-  },
-  globe: {
-    label: "Partners",
-    heading: "Partners across the globe",
-    body: `These pins mark our partners and collaborators. Together they represent about ${SITE.impact.partnerReach} people through our partner network. We work with partners in ${SITE.impact.countries} countries, and that list keeps growing.`,
-    primaryCta: { label: "View all countries", href: "/partners#countries" } satisfies CtaLink,
-    secondaryCta: { label: "Become a partner", href: "/contact" } satisfies CtaLink,
-  },
-  benefits: {
-    label: "Programs",
-    heading: "How we teach money skills",
-    cards: [
-      {
-        id: "curriculum" as const,
-        title: "Curriculum & workshops",
-        description:
-          "We teach budgeting, saving, credit, and planning with simple steps and real examples.",
-      },
-      {
-        id: "tutoring" as const,
-        title: "Live tutoring worldwide",
-        description:
-          "Live tutoring for ages 10–16 with NGO partners across Latin America, Africa, and Asia.",
-      },
-      {
-        id: "gameclass" as const,
-        title: "Interactive lessons",
-        descriptionBefore: "Partnering with ",
-        descriptionLink: {
-          label: "GameClass AI",
-          href: "https://gameclass.net/",
-        },
-        descriptionAfter:
-          " on short lessons where students practice budgeting, credit, saving, and planning.",
-      },
-    ],
-  },
-  programs: {
-    label: "Programs",
-    heading: "Budget Bridge reaches students in schools and communities",
-    tabs: [
-      {
-        id: "education",
-        label: "Education & tutoring",
-        description:
-          "Live tutoring sessions, workshops, and curriculum for students.",
-      },
-      {
-        id: "seminars",
-        label: "School seminars",
-        description:
-          "Free, easy-to-understand seminars in local elementary and middle schools.",
-      },
-      {
-        id: "advocacy",
-        label: "Policy & advocacy",
-        description:
-          "Board of Education advocacy and state legislation so every student graduates with money skills.",
-      },
-      {
-        id: "volunteers",
-        label: "Volunteer departments",
-        description:
-          "Social Media, Outreach, Curriculum Development, Research, Public Policy, and Tech.",
-      },
-    ],
-  },
-  approach: {
-    label: "Advocacy",
-    heading: "Turning policy into progress",
-    points: [
-      "Free seminars in local elementary and middle schools",
-      "Live tutoring for ages 10–16 with NGO partners worldwide",
-      "Advocacy for a standalone personal finance course at local Boards of Education",
-      "Senate Bill 3497 and Assembly Bill A4764 to close New Jersey’s financial literacy loophole",
-    ],
-    primaryCta: { label: "Learn more", href: "/advocacy" } satisfies CtaLink,
-    secondaryCta: { label: "Talk to the team", href: "/contact" } satisfies CtaLink,
-  },
-  involved: {
-    label: "Get involved",
-    heading: "Volunteer with Budget Bridge",
-    intro:
-      "Your time and expertise can make a real difference in the lives of children who lack access to quality financial education. We have a mission, but we cannot do it alone.",
-    tabs: [
-      { id: "social", label: "Social Media" },
-      { id: "outreach", label: "Outreach" },
-      { id: "curriculum", label: "Curriculum Development" },
-      { id: "research", label: "Research" },
-      { id: "policy", label: "Public Policy" },
-      { id: "tech", label: "Tech" },
-    ],
-  },
-  impact: {
-    label: "Impact",
-    heading: "Our Impact",
-    cards: [
-      {
-        id: "students" as const,
-        title: `${SITE.impact.students} students reached`,
-        description: "Students reached through Budget Bridge programs.",
-      },
-      {
-        id: "partners" as const,
-        title: `${SITE.impact.partnerReach} partner reach`,
-        description:
-          "Member reach through our partners and collaborators worldwide.",
-      },
-      {
-        id: "grants" as const,
-        title: `${SITE.impact.grants} in partner grants`,
-        description:
-          "Raised from partner grants that fund financial education worldwide.",
-      },
-    ],
-  },
-  press: {
-    label: "Press",
-    heading: "In the news",
-    cards: [
-      {
-        outlet: "TAP into",
-        title:
-          "From GDP to writing a check: Closing the financial literacy gap in Parsippany schools",
-        href: "https://www.tapinto.net/towns/parsippany/articles/from-gdp-to-writing-a-check-closing-the-financial-literacy-gap-in-parsippany-schools",
-        tone: "bg-[#1e3a5f]",
-      },
-      {
-        outlet: "Parsippany Focus",
-        title:
-          "Letter to the editor: From GDP to writing a check — closing the financial literacy gap in Parsippany schools",
-        href: "https://parsippanyfocus.com/letter-to-the-editor-from-gdp-to-writing-a-check-closing-the-financial-literacy-gap-in-parsippany-schools/",
-        tone: "bg-[#2f4a3c]",
-      },
-      {
-        outlet: "Board of Education",
-        title:
-          "Founder testimony at Randolph and Parsippany Board of Education meetings",
-        href: "/advocacy#testimony",
-        tone: "bg-[#3d3229]",
-      },
-    ],
-  },
-  blog: {
-    label: "Blog",
-  },
-  highlights: {
     items: [
-      {
-        id: "story" as const,
-        title: "Our story",
-        date: "About",
-        href: "/about",
-        pattern: "waves" as const,
-      },
-      {
-        id: "volunteer" as const,
-        title: "Volunteer",
-        date: "Join",
-        href: "/get-involved",
-        pattern: "grid" as const,
-      },
-      {
-        id: "advocacy" as const,
-        title: "Advocacy",
-        date: "Policy",
-        href: "/advocacy",
-        pattern: "grain" as const,
-      },
+      { label: "Curriculum", href: "/programs" },
+      { label: "Register a student", href: "/register" },
+      { label: "Host a workshop", href: "/contact?topic=host" },
     ],
   },
-  closing: {
-    line1: "Empowering Financial Futures.",
-    line2: "Volunteer with Budget Bridge.",
-    primaryCta: { label: "Volunteer with us", href: "/get-involved" } satisfies CtaLink,
-    secondaryCta: { label: "Talk to the team", href: "/contact" } satisfies CtaLink,
+  {
+    title: "Get involved",
+    items: [
+      { label: "Become a mentor", href: "/mentors" },
+      { label: "Donate", href: "/donate" },
+      { label: "Sponsor hardware", href: "/donate#sponsor" },
+    ],
   },
-} as const;
+  {
+    title: "Organization",
+    items: [
+      { label: "About", href: "/about" },
+      { label: "Governance", href: "/about#governance" },
+      { label: "Transparency", href: "/about#transparency" },
+    ],
+  },
+  {
+    title: "Contact",
+    items: [
+      { label: "Contact us", href: "/contact" },
+      { label: "Press", href: "/contact?topic=press" },
+    ],
+  },
+];

@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CircuitSparks
 
-## Getting Started
+Website for CircuitSparks, a student-founded, youth-led 501(c)(3) bringing free, hands-on electronics workshops to middle schoolers.
 
-First, run the development server:
+Next.js 16 (App Router) · React 19 · Tailwind CSS 4.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Design system
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Modeled closely on [cube.computer](https://cube.computer/). Live reference at [`/design-system`](http://localhost:3000/design-system) (not indexed).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Tokens** live in `src/app/globals.css` (`@theme`). White paper, ink text and rules, `sky` (#b6dbe1) as the brand accent, `signal` (#35808d) for accent text.
+- **Layout unit:** `<Chapter num title lede>`: an ink rule, a number in the left rail, a two-line title with a short lede, then content. Every page is a `PageIntro` followed by chapters and the `Outro`.
+- **Visuals:** `<Shot gradient="tide | horizon | depth" label="…" />` frames a placeholder in one of the brand gradients (extracted from the Odyssey boards by `scripts/extract-gradients.py`). Replace the placeholder with photography later.
+- **Rules:** no shadows, regular-weight headings, short copy. Motion is a single fade-up on scroll, disabled for reduced motion.
 
-## Learn More
+## Content
 
-To learn more about Next.js, take a look at the following resources:
+- Organization settings (domain, emails, GoFundMe link): `src/lib/site.ts`
+- Tiers, FAQ, facts, and other repeated copy: `src/lib/content.ts`
+- Form fields: `src/lib/forms.ts`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Before launch
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [ ] Confirm domain, inboxes, and the GoFundMe URL in `src/lib/site.ts`
+- [ ] Set `FORMS_WEBHOOK_URL` (see `.env.example`)
+- [ ] Review drafted copy, especially tier names and topics, governance, and sponsorship tiers
+- [ ] Replace placeholders with photography, and add team names on `/about`
+- [ ] Add a privacy policy (the registration form collects information about minors)
 
-## Deploy on Vercel
+## Icons
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`node scripts/generate-icons.mjs` regenerates the favicon and app icons from `public/logo-black.svg`.

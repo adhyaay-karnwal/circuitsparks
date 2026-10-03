@@ -1,21 +1,12 @@
 import type { MetadataRoute } from "next";
-import { headers } from "next/headers";
-import {
-  absoluteUrl,
-  resolveSiteBaseUrl,
-  SITEMAP_ROUTES,
-} from "@/lib/seo";
+import { site } from "@/lib/site";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const headersList = await headers();
-  const host =
-    headersList.get("x-forwarded-host") ?? headersList.get("host");
-  const baseUrl = resolveSiteBaseUrl(host);
+const routes = ["", "/programs", "/register", "/mentors", "/donate", "/about", "/contact"];
 
-  return SITEMAP_ROUTES.map((route) => ({
-    url: absoluteUrl(route.path, baseUrl),
-    lastModified: route.lastModified ?? new Date().toISOString(),
-    changeFrequency: route.changeFrequency,
-    priority: route.priority,
+export default function sitemap(): MetadataRoute.Sitemap {
+  return routes.map((route) => ({
+    url: `${site.url}${route}`,
+    changeFrequency: "monthly",
+    priority: route === "" ? 1 : 0.7,
   }));
 }

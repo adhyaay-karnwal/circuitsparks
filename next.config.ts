@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  images: {
+    // Brand gradients are grainy; 90 keeps the grain from smearing into bands.
+    qualities: [75, 90],
+  },
   async headers() {
     return [
       {

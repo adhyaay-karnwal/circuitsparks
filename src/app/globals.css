@@ -1,219 +1,161 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #0d0e0f;
-  --accent: #1a1a2e;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --link-gold: #b8952c;
-  --link-gold-hover: #9a7a24;
-  /* Natural primary hover — olive wash over white */
-  --button-hover: rgba(17, 20, 0, 0.75);
+/* ==========================================================================
+   CircuitSparks design tokens
+   Swiss layout modeled on cube.computer: white paper, ink rules, one accent.
+   Flat: no shadows anywhere.
+   ========================================================================== */
+
+@theme {
+  /* Color */
+  --color-paper: #ffffff;
+  --color-plate: #f3f4f5; /* quiet surfaces */
+  --color-ink: #15181a;
+  --color-ink-hover: #33383b;
+  --color-ink-soft: #5c6366;
+  --color-hairline: rgb(21 24 26 / 0.12);
+  --color-sky: #b6dbe1; /* brand accent: favicon, highlights, selection */
+  --color-sky-pale: #eaf4f6;
+  --color-signal: #35808d; /* sky's hue, dark enough for text on white */
+
+  /* Type */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --text-hero: clamp(2.75rem, 1.9rem + 2.6vw, 4rem);
+  --text-hero--line-height: 1.05;
+  --text-hero--letter-spacing: -0.03em;
+  --text-hero--font-weight: 500;
+
+  --text-outro: clamp(3.5rem, 8vw, 7.5rem);
+  --text-outro--line-height: 0.92;
+  --text-outro--letter-spacing: -0.045em;
+
+  --text-display: clamp(3rem, 6vw, 5.5rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.04em;
+
+  --text-title: clamp(2rem, 3.6vw, 3.25rem);
+  --text-title--line-height: 1.04;
+  --text-title--letter-spacing: -0.03em;
+
+  --text-num: clamp(2.5rem, 4vw, 3.625rem);
+  --text-num--line-height: 1;
+  --text-num--letter-spacing: -0.02em;
+
+  --text-step: 2.25rem;
+  --text-step--line-height: 1;
+  --text-step--letter-spacing: -0.03em;
+
+  --text-sub: clamp(1.25rem, 1rem + 0.8vw, 1.75rem);
+  --text-sub--line-height: 1.2;
+  --text-sub--letter-spacing: -0.02em;
+
+  --text-lede: 1.0625rem;
+  --text-lede--line-height: 1.45;
+  --text-lede--letter-spacing: -0.01em;
+
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.45;
+
+  --text-micro: 0.8125rem;
+  --text-micro--line-height: 1.4;
+
+  /* Shape */
+  --radius-frame: 14px;
+  --radius-field: 8px;
+
+  /* Space */
+  --spacing-gutter: clamp(1rem, 3.9vw, 3.5rem);
+  --spacing-rail: 160px;
+  --spacing-header: 4rem;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent: var(--accent);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
-  --font-sans: var(--font-acumin-pro);
-  /* Prefer medium emphasis over heavy Acumin Bold */
-  --font-weight-bold: 500;
-}
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-padding-top: 5rem;
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-acumin-pro), Arial, Helvetica, sans-serif;
-}
+  body {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    font-feature-settings: "cv11", "ss01";
+  }
 
-/* Matches natural.com: 40px min gutter; centers 1200px content on wide screens */
-@utility content-gutter-x {
-  padding-left: max(2.5rem, calc((100% - 1200px) / 2));
-  padding-right: max(2.5rem, calc((100% - 1200px) / 2));
-}
+  ::selection {
+    background: var(--color-sky);
+    color: var(--color-ink);
+  }
 
-/* Instagram brand gradient for Instagram text links */
-.bbf-link-instagram {
-  background-image: linear-gradient(
-    45deg,
-    #f09433 0%,
-    #e6683c 25%,
-    #dc2743 50%,
-    #cc2366 75%,
-    #bc1888 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
 
-/* —— Home intro / page enter motion —— */
-@keyframes home-intro-logo-in {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes home-hero-line-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes home-hero-chrome-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes home-nav-enter {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes page-text-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes page-body-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 }
 
-.home-intro-logo {
-  animation: home-intro-logo-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.home-hero-line {
-  animation: home-hero-line-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.home-hero-chrome {
-  animation: home-hero-chrome-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.home-nav-enter {
-  animation: home-nav-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.home-nav-enter-fast {
-  animation: home-nav-enter 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-/* Hero gallery — absolute collage, 10px gutters, grows from logo center */
-.hero-gallery-cluster {
-  position: relative;
-  width: min(100%, var(--stage-w, 480px));
-  aspect-ratio: 480 / 348;
-  max-height: min(52vh, 368px);
-}
-
-.hero-gallery-tile {
-  position: absolute;
-  opacity: 0;
-  transform: scale(0.08);
-  transform-origin: var(--grow-x, 50%) var(--grow-y, 50%);
-  will-change: transform, opacity;
-}
-
-.hero-gallery-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-gallery-logo > div {
+@utility wrap {
   width: 100%;
-  height: 100%;
+  max-width: 1352px;
+  margin-inline: auto;
+  padding-inline: var(--spacing-gutter);
 }
 
-.hero-gallery-cluster--reveal .hero-gallery-tile {
-  animation: hero-gallery-tile-grow 0.78s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
+/* ---------------------------------------------------------------- Motion */
 
-.hero-gallery-cluster--return .hero-gallery-tile {
-  animation-duration: 0.55s;
-}
-
-.hero-gallery-cluster--settled .hero-gallery-tile {
-  opacity: 1;
-  transform: none;
-}
-
-@keyframes hero-gallery-tile-grow {
-  0% {
+@keyframes fade-up {
+  from {
     opacity: 0;
-    transform: scale(0.08);
+    transform: translate3d(0, 16px, 0);
   }
-  100% {
+  to {
     opacity: 1;
-    transform: scale(1);
+    transform: none;
   }
 }
 
-.page-enter-text {
-  animation: page-text-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+/* Load-time entrance for hero copy. */
+.enter {
+  animation: fade-up 1s var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * 80ms + 100ms);
 }
 
-.page-enter-text-delay {
-  animation: page-text-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
-}
+/* Scroll reveal: content fades up once. Hidden only when JS is running. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+    transition:
+      opacity 0.9s var(--ease-out-expo),
+      transform 0.9s var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
 
-.page-enter-body {
-  animation: page-body-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
+  [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-intro-logo,
-  .home-hero-line,
-  .home-hero-chrome,
-  .home-nav-enter,
-  .home-nav-enter-fast,
-  .hero-gallery-cluster--reveal .hero-gallery-tile,
-  .hero-gallery-cluster--settled .hero-gallery-tile,
-  .page-enter-text,
-  .page-enter-text-delay,
-  .page-enter-body {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

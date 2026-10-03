@@ -1,56 +1,53 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { IntroProvider } from "@/components/intro/IntroProvider";
-import { PageEnd } from "@/components/PageEnd";
-import { SiteJsonLd } from "@/components/seo/JsonLd";
-import { rootMetadata } from "@/lib/metadata";
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
+import { Footer } from "@/components/site/Footer";
+import { Header } from "@/components/site/Header";
+import { RevealObserver } from "@/components/ui/RevealObserver";
+import { site } from "@/lib/site";
 import "./globals.css";
 
-const acuminPro = localFont({
-  src: [
-    {
-      path: "../../public/fonts/Acumin-RPro.otf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Acumin-ItPro.otf",
-      weight: "400",
-      style: "italic",
-    },
-    {
-      path: "../../public/fonts/Acumin-BdPro.otf",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Acumin-BdItPro.otf",
-      weight: "700",
-      style: "italic",
-    },
-  ],
-  variable: "--font-acumin-pro",
+const inter = Inter({
+  subsets: ["latin"],
+  axes: ["opsz"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
-export const metadata: Metadata = rootMetadata;
+export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
+  title: {
+    default: `${site.name} | Hands-on engineering for middle schoolers`,
+    template: `%s | ${site.name}`,
+  },
+  description: site.description,
+  openGraph: {
+    type: "website",
+    siteName: site.name,
+    title: `${site.name} | Hands-on engineering for middle schoolers`,
+    description: site.description,
+    url: "/",
+  },
+  twitter: { card: "summary_large_image" },
+};
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${acuminPro.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col font-sans">
-        <SiteJsonLd />
-        <IntroProvider>
-          <Header />
-          <div className="flex-1">{children}</div>
-          <PageEnd />
-          <Footer />
-        </IntroProvider>
+    <html lang="en" className={inter.variable}>
+      <body>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-small focus:text-paper"
+        >
+          Skip to content
+        </a>
+        <Header />
+        <main id="main">{children}</main>
+        <Footer />
+        <RevealObserver />
       </body>
     </html>
   );

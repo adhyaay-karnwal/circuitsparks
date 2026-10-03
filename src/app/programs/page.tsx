@@ -1,83 +1,68 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
-import { Icon } from "@/components/Icon";
-import { PageHero, PageSection } from "@/components/PageChrome";
-import { SectionHeading } from "@/components/home/primitives";
-import { PROGRAMS } from "@/lib/content";
-import { MEDIA, type MediaImage } from "@/lib/media";
-import { pageMetadata } from "@/lib/metadata";
-import { SITE } from "@/lib/site";
+import { Outro } from "@/components/site/Outro";
+import { ButtonLink } from "@/components/ui/Button";
+import { Chapter } from "@/components/ui/Chapter";
+import { PageIntro } from "@/components/ui/PageIntro";
+import { Shot, type GradientName } from "@/components/ui/Shot";
+import { Steps } from "@/components/ui/Steps";
+import { tiers } from "@/lib/content";
+import { stagger } from "@/lib/cn";
 
-export const metadata = pageMetadata({
+export const metadata: Metadata = {
   title: "Programs",
-  description: `${PROGRAMS.description} Budget Bridge Foundation programs include live tutoring, school seminars, workshops, and financial literacy advocacy for students worldwide.`,
-  path: "/programs",
-  keywords: ["financial literacy programs", "student financial education", "nonprofit education programs"],
-});
+  description: "Three tiers of free, hands-on electronics workshops for middle schoolers: Spark, Current, and Signal.",
+};
 
-const CARD_IMAGES = {
-  "/programs/education": MEDIA.programs.gameclass,
-  "/programs/seminars": MEDIA.events.conference,
-  "/advocacy": MEDIA.advocacy.photos[0],
-} as const satisfies Record<
-  (typeof PROGRAMS.cards)[number]["href"],
-  MediaImage
->;
+const frames: GradientName[] = ["tide", "horizon", "depth"];
 
 export default function ProgramsPage() {
   return (
-    <main className="bg-white">
-      <PageHero
-        label={PROGRAMS.label}
-        title={PROGRAMS.title}
-        description={PROGRAMS.description}
-      />
+    <>
+      <PageIntro title="Programs." lede="Three tiers of free, hands-on workshops. Each one builds on the last.">
+        <ButtonLink href="/register">Register a student</ButtonLink>
+      </PageIntro>
 
-      <PageSection>
-        <div className="grid gap-10 md:grid-cols-3 md:gap-8">
-          {PROGRAMS.cards.map((card) => {
-            const image = CARD_IMAGES[card.href];
+      {tiers.map((tier, i) => (
+        <Chapter
+          key={tier.id}
+          id={tier.id}
+          num={String(i + 1).padStart(2, "0")}
+          title={
+            <>
+              {tier.name}.
+              <br /> {tier.focus}.
+            </>
+          }
+          lede={
+            <>
+              {tier.summary} <span className="text-ink-soft">{tier.prerequisite}.</span>
+            </>
+          }
+        >
+          <ul className="mb-10 grid grid-cols-2 gap-x-6 gap-y-4 lg:grid-cols-4">
+            {tier.topics.map((topic, j) => (
+              <li key={topic} data-reveal style={stagger(j)} className="border-t border-ink pt-3 text-small">
+                {topic}
+              </li>
+            ))}
+          </ul>
+          <Shot gradient={frames[i]} label={`Photo: ${tier.name} workshop`} />
+        </Chapter>
+      ))}
 
-            return (
-              <Link key={card.href} href={card.href} className="group block">
-                <div className="relative mb-6 aspect-[4/3] overflow-hidden rounded-[2px] bg-[#ececec]">
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                </div>
-                <h2 className="flex items-center gap-2 text-[17px] font-medium text-[#161514] transition-colors group-hover:text-[#717071]">
-                  {card.title}
-                  <Icon
-                    icon={ArrowRight01Icon}
-                    size={14}
-                    className="shrink-0"
-                    aria-hidden
-                  />
-                </h2>
-                <p className="mt-2 text-[15px] leading-6 text-[#717071]">
-                  {card.description}
-                </p>
-              </Link>
-            );
-          })}
-        </div>
-      </PageSection>
+      <Chapter num="04" title="Workshop format." lede="The same structure at every library and school.">
+        <Steps
+          numbered={false}
+          items={[
+            { title: "Free", body: "No cost to students, families, or host sites." },
+            { title: "Hardware provided", body: "Every student gets their own kit to build with." },
+            { title: "Small groups", body: "A trained high school mentor at every table." },
+            { title: "Grades 6–8", body: "No experience needed to start at Spark." },
+          ]}
+        />
+      </Chapter>
 
-      <PageSection>
-        <SectionHeading>
-          {SITE.impact.students} students · {SITE.impact.partnerReach} partner
-          reach · {SITE.impact.grants} grants
-        </SectionHeading>
-        <p className="mt-4 max-w-xl text-[15px] leading-6 text-[#717071]">
-          Impact from Budget Bridge programs and partners worldwide.
-        </p>
-      </PageSection>
-    </main>
+      <Outro />
+    </>
   );
 }
